@@ -1,0 +1,10 @@
+.nav__list {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+}
+
+.nav__item a {
+    font-size: 1.5rem;
+    color: var(--color--primary);
+}
