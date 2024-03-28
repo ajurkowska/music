@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeadphones } from '@fortawesome/free-solid-svg-icons';
 import '../styles/App.css';
 
-const Header = () => {
+const Header = (props) => {
 	return (
 		<header className="header">
 			<div className="header__box">
@@ -18,7 +18,7 @@ const Header = () => {
 				</div>
 				<Menu />
 			</div>
-            <Search />
+            <Search value={props.value} change={props.change} submit={props.submit}/>
 		</header>
 	);
 };
