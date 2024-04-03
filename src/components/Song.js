@@ -1,20 +1,25 @@
 import React from 'react';
 import '../styles/Song.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHeart } from '@fortawesome/free-regular-svg-icons';
 
 const Song = (props) => {
-	const { title, artist, album, duration, rank, image, preview } = props.result;
+	const { id, title, artist, album, duration, rank, image, preview, isFavorite } = props.result;
 
 	const formatTime = (duration) => {
 		const minutes = Math.floor(duration / 60);
 		const seconds = duration % 60;
-		return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`
-		}
-	
+		return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+	};
+
 	return (
 		<li className="list__item">
-			<img src={image} alt="title" />
+			<div className="item__img">
+				<img src={image} alt="album cover" />
+				<button><FontAwesomeIcon icon={faHeart} className={`item__icon ${isFavorite ? 'item__icon-favorite' : ''}`} onClick={() => props.click(id)}/></button>
+			</div>
 			<div className="item__info">
-				<span>{title}</span>
+				<h2>{title}</h2>
 				<p>Artist: {artist}</p>
 				<p>Album: {album}</p>
 				<p>Duration: {formatTime(duration)}</p>
