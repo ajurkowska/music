@@ -11,14 +11,35 @@
     margin: auto;
 }
 
+.item__img {
+    position: relative;
+}
+
+.item__icon {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 1.5rem;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    background-color: rgb(245, 242, 242);
+}
+
+.item__icon-favorite {
+    color: rgb(222, 34, 34);
+    background-color: rgb(22, 11, 11);
+}
+
 .item__info {
     margin: 10px;
     text-align: center;
     min-height: 150px;
 }
 
-.item__info span {
+.item__info h2 {
     font-weight: bold;
+    font-size: 1.125rem;
 }
 
 .item__info p {
