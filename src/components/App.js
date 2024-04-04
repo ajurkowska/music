@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './Header';
 import Songs from './Songs';
 import FavoriteList from './FavoriteList';
+import ErrorPage from '../pages/ErrorPage';
 
 const options = {
 	method: 'GET',
@@ -41,7 +43,7 @@ class App extends Component {
 						rank: song.rank,
 						image: song.album.cover_medium,
 						preview: song.preview,
-						isFavorite: false
+						isFavorite: false,
 					}));
 					this.setState({
 						songs,
@@ -58,11 +60,11 @@ class App extends Component {
 
 	handleToggleFavorite = (id) => {
 		const songs = [...this.state.songs];
-		const index = songs.findIndex(song => song.id === id);
+		const index = songs.findIndex((song) => song.id === id);
 		songs[index].isFavorite = !songs[index].isFavorite;
 		this.setState({
-			songs
-		})
+			songs,
+		});
 	};
 
 	handleChange = (e) => {
@@ -73,15 +75,24 @@ class App extends Component {
 
 	render() {
 		return (
-			<React.Fragment>
+			<Router>
 				<Header
 					value={this.state.value}
 					change={this.handleChange}
 					submit={this.handleSubmit}
 				/>
-				<Songs result={this.state} click={this.handleToggleFavorite} />
-				<FavoriteList songs={this.state.songs}/>
-			</React.Fragment>
+				<Routes>
+					<Route
+						path="/"
+						element={
+							<Songs result={this.state} click={this.handleToggleFavorite} />
+						}></Route>
+					<Route
+						path="favorite"
+						element={<FavoriteList songs={this.state.songs} click={this.handleToggleFavorite} />}></Route>
+					<Route path='*' element={<ErrorPage/>}></Route>
+				</Routes>
+			</Router>
 		);
 	}
 }
