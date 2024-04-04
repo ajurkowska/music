@@ -4,6 +4,7 @@ import Header from './Header';
 import Songs from './Songs';
 import FavoriteList from './FavoriteList';
 import ErrorPage from '../pages/ErrorPage';
+import Error from './Error';
 
 const options = {
 	method: 'GET',
@@ -17,6 +18,7 @@ class App extends Component {
 	state = {
 		value: '',
 		songs: [],
+		error: null
 	};
 
 	handleSubmit = (e) => {
@@ -43,14 +45,20 @@ class App extends Component {
 						rank: song.rank,
 						image: song.album.cover_medium,
 						preview: song.preview,
-						isFavorite: false,
+						isFavorite: false
 					}));
 					this.setState({
 						songs,
 						value: '',
+						error: null
 					});
 				} else {
 					console.error('brak danych z API');
+					this.setState({
+						error: <Error />,
+						songs: [],
+						value: ''
+					})
 				}
 			})
 			.catch((error) => {
@@ -81,6 +89,7 @@ class App extends Component {
 					change={this.handleChange}
 					submit={this.handleSubmit}
 				/>
+				{this.state.error ? <Error /> : ''}
 				<Routes>
 					<Route
 						path="/"
