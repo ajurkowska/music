@@ -20,7 +20,7 @@ const Header = (props) => {
 						<h1 className="logo__name">MusicApp</h1>
 					</Link>
 				</div>
-				<Menu />
+				<Menu click={props.click}/>
 			</div>
 			{isMainPage && <Search value={props.value} change={props.change} submit={props.submit} />}
 		</header>

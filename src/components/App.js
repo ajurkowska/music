@@ -1,10 +1,17 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import {
+	BrowserRouter as Router,
+	Routes,
+	Route,
+	Navigate,
+} from 'react-router-dom';
 import Header from './Header';
 import Songs from './Songs';
 import FavoriteList from './FavoriteList';
 import ErrorPage from '../pages/ErrorPage';
 import Error from './Error';
+import Login from './Login';
+import Logout from './Logout';
 
 const options = {
 	method: 'GET',
@@ -18,7 +25,12 @@ class App extends Component {
 	state = {
 		value: '',
 		songs: [],
-		error: null
+		error: null,
+		email: '',
+		password: '',
+		isLogged: false,
+		loginError: null,
+		showLogoutInfo: false,
 	};
 
 	handleSubmit = (e) => {
@@ -45,20 +57,20 @@ class App extends Component {
 						rank: song.rank,
 						image: song.album.cover_medium,
 						preview: song.preview,
-						isFavorite: false
+						isFavorite: false,
 					}));
 					this.setState({
 						songs,
 						value: '',
-						error: null
+						error: null,
 					});
 				} else {
 					console.error('brak danych z API');
 					this.setState({
 						error: <Error />,
 						songs: [],
-						value: ''
-					})
+						value: '',
+					});
 				}
 			})
 			.catch((error) => {
@@ -81,25 +93,115 @@ class App extends Component {
 		});
 	};
 
+	handleChangeLogin = (e) => {
+		const name = e.target.name;
+		this.setState({
+			[name]: e.target.value,
+		});
+	};
+
+	handleLoginSubmit = (e) => {
+		e.preventDefault();
+		if (this.state.email === 'test@test.pl' && this.state.password === '1234') {
+			this.setState({
+				isLogged: true,
+			});
+		} else {
+			this.setState({
+				loginError: 'Wprowadzone dane są nieprawidłowe.',
+			});
+		}
+	};
+
+	handleLogoutClick = () => {
+		this.setState({
+			showLogoutInfo: true,
+		});
+	};
+
+	handleLogoutConfirm = () => {
+		this.setState({
+			isLogged: false,
+			showLogoutInfo: false,
+		});
+	};
+
+	handleLogoutCancel = () => {
+		this.setState({
+			showLogoutInfo: false,
+		});
+	};
+
 	render() {
+		const { isLogged, showLogoutInfo } = this.state;
+
 		return (
 			<Router>
 				<Header
 					value={this.state.value}
 					change={this.handleChange}
 					submit={this.handleSubmit}
+					click={this.handleLogoutClick}
 				/>
 				{this.state.error ? <Error /> : ''}
+
 				<Routes>
+					{!showLogoutInfo && (
+						<Route
+							path="/"
+							element={
+								isLogged && !showLogoutInfo ? (
+									<Songs
+										result={this.state}
+										click={this.handleToggleFavorite}
+									/>
+								) : (
+									<Navigate to="/login" />
+								)
+							}
+						/>
+					)}
+					{!showLogoutInfo && (
+						<Route
+							path="/favorite"
+							element={
+								isLogged && !showLogoutInfo ? (
+									<FavoriteList
+										songs={this.state.songs}
+										click={this.handleToggleFavorite}
+									/>
+								) : (
+									<Navigate to="/login" />
+								)
+							}
+						/>
+					)}
+
+					{showLogoutInfo && (
+						<Route
+							path="/"
+							element={
+								<Logout
+									clickConfirm={this.handleLogoutConfirm}
+									clickCancel={this.handleLogoutCancel}
+								/>
+							}></Route>
+					)}
 					<Route
-						path="/"
+						path="/login"
 						element={
-							<Songs result={this.state} click={this.handleToggleFavorite} />
-						}></Route>
-					<Route
-						path="favorite"
-						element={<FavoriteList songs={this.state.songs} click={this.handleToggleFavorite} />}></Route>
-					<Route path='*' element={<ErrorPage/>}></Route>
+							!isLogged ? (
+								<Login
+									change={this.handleChangeLogin}
+									submit={this.handleLoginSubmit}
+									loginError={this.state.loginError}
+								/>
+							) : (
+								<Navigate to="/" />
+							)
+						}
+					/>
+					<Route path="*" element={<ErrorPage />}></Route>
 				</Routes>
 			</Router>
 		);
