@@ -1,8 +1,8 @@
 .list__item {
-    color: rgb(8, 7, 7);
     width: 252px;
     min-height: 500px;
     height: auto;
+    color: var(--color--secondary);
 }
 
 .list__item img {
@@ -19,35 +19,38 @@
     position: absolute;
     top: 10px;
     right: 25px;
+    padding: 10px;
     font-size: 1.5rem;
     border-radius: 50%;
-    padding: 10px;
     cursor: pointer;
-    background-color: rgb(245, 242, 242);
+    color: black;
+    background-color: var(--color--secondary);
 }
 
 .item__icon-favorite {
-    color: rgb(222, 34, 34);
-    background-color: rgb(22, 11, 11);
+    color: var(--color--primary);
+    background-color: var(--color--bg);
 }
 
 .item__info {
-    margin: 10px;
+    margin: 15px;
     text-align: center;
-    min-height: 150px;
+    min-height: 160px;
 }
 
 .item__info h2 {
     font-weight: bold;
     font-size: 1.125rem;
+    color: var(--color--primary);
 }
 
 .item__info p {
-    font-size: .9rem;
     margin: 3px 0;
+    font-size: .9rem;
     font-style: italic;
 }
 
 audio {
     width: 250px;
+    height: 30px;
 }

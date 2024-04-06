@@ -1,15 +1,15 @@
 .header {
 	width: 100%;
-	height: 180px;
+	height: 250px;
 }
 
 .header__box {
-	height: 60px;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	width: 80%;
 	margin: auto;
+	height: 60px;
+	width: 80%;
 }
 
 .header__brand a {
@@ -19,6 +19,11 @@
 	gap: 10px;
 	text-decoration: none;
 	color: var(--color--primary);
+}
+
+a:hover {
+	color: var(--color--secondary);
+	transition: .3s;
 }
 
 .logo__icon {
