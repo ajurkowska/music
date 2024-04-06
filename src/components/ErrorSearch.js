@@ -1,10 +1,10 @@
 import React from 'react';
 import '../styles/Error.css';
 
-const Error = () => {
+const ErrorSearch = () => {
     return ( 
         <div className='error'>Brak danych w bazie.</div>
      );
 }
  
-export default Error;
+export default ErrorSearch;
