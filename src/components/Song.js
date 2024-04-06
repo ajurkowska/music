@@ -16,7 +16,7 @@ const Song = (props) => {
 		<li className="list__item">
 			<div className="item__img">
 				<img src={image} alt="album cover" />
-				<button><FontAwesomeIcon icon={faHeart} className={`item__icon ${isFavorite ? 'item__icon-favorite' : ''}`} onClick={() => props.click(id)}/></button>
+				<FontAwesomeIcon icon={faHeart} className={`item__icon ${isFavorite ? 'item__icon-favorite' : ''}`} onClick={() => props.click(id)}/>
 			</div>
 			<div className="item__info">
 				<h2>{title}</h2>

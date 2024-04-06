@@ -22,7 +22,7 @@ const Header = (props) => {
 				</div>
 				<Menu click={props.click}/>
 			</div>
-			{isMainPage && <Search value={props.value} change={props.change} submit={props.submit} />}
+			{isMainPage && !props.showLogoutInfo && <Search value={props.value} change={props.change} submit={props.submit} />}
 		</header>
 	);
 };

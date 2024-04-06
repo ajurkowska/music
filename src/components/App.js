@@ -9,7 +9,7 @@ import Header from './Header';
 import Songs from './Songs';
 import FavoriteList from './FavoriteList';
 import ErrorPage from '../pages/ErrorPage';
-import Error from './Error';
+import ErrorSearch from './ErrorSearch';
 import Login from './Login';
 import Logout from './Logout';
 
@@ -25,7 +25,7 @@ class App extends Component {
 	state = {
 		value: '',
 		songs: [],
-		error: null,
+		showError: false,
 		email: '',
 		password: '',
 		isLogged: false,
@@ -62,12 +62,12 @@ class App extends Component {
 					this.setState({
 						songs,
 						value: '',
-						error: null,
+						showError: false
 					});
 				} else {
-					console.error('brak danych z API');
+					console.error('Brak wyników wyszukiwania.');
 					this.setState({
-						error: <Error />,
+						showError: true,
 						songs: [],
 						value: '',
 					});
@@ -105,6 +105,7 @@ class App extends Component {
 		if (this.state.email === 'test@test.pl' && this.state.password === '1234') {
 			this.setState({
 				isLogged: true,
+				loginError: null
 			});
 		} else {
 			this.setState({
@@ -116,6 +117,7 @@ class App extends Component {
 	handleLogoutClick = () => {
 		this.setState({
 			showLogoutInfo: true,
+			showError: false
 		});
 	};
 
@@ -142,8 +144,9 @@ class App extends Component {
 					change={this.handleChange}
 					submit={this.handleSubmit}
 					click={this.handleLogoutClick}
+					showLogoutInfo = {showLogoutInfo}
 				/>
-				{this.state.error ? <Error /> : ''}
+				
 
 				<Routes>
 					{!showLogoutInfo && (
@@ -161,6 +164,7 @@ class App extends Component {
 							}
 						/>
 					)}
+					
 					{!showLogoutInfo && (
 						<Route
 							path="/favorite"
@@ -203,6 +207,7 @@ class App extends Component {
 					/>
 					<Route path="*" element={<ErrorPage />}></Route>
 				</Routes>
+				{this.state.showError && <ErrorSearch />}
 			</Router>
 		);
 	}
