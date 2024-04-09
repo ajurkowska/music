@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {
 	BrowserRouter as Router,
 	Routes,
@@ -21,23 +21,21 @@ const options = {
 	},
 };
 
-class App extends Component {
-	state = {
-		value: '',
-		songs: [],
-		showError: false,
-		email: '',
-		password: '',
-		isLogged: false,
-		loginError: null,
-		showLogoutInfo: false,
-	};
+function App() {
+	const [value, setValue] = useState('');
+	const [songs, setSongs] = useState([]);
+	const [showError, setShowError] = useState(false);
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+	const [isLogged, setIsLogged] = useState(false);
+	const [loginError, setLoginError] = useState(null);
+	const [showLogoutInfo, setShowLogoutInfo] = useState(false);
 
-	handleSubmit = (e) => {
+	function handleSubmit(e) {
 		e.preventDefault();
 		console.log('kliknięto');
 		fetch(
-			`https://deezerdevs-deezer.p.rapidapi.com/search?q=${this.state.value}`,
+			`https://deezerdevs-deezer.p.rapidapi.com/search?q=${value}`,
 			options
 		)
 			.then((response) => {
@@ -48,7 +46,7 @@ class App extends Component {
 			})
 			.then((data) => {
 				if (data.data && data.data.length > 0) {
-					const songs = data.data.map((song) => ({
+					const songList = data.data.map((song) => ({
 						id: song.id,
 						title: song.title,
 						artist: song.artist.name,
@@ -59,158 +57,132 @@ class App extends Component {
 						preview: song.preview,
 						isFavorite: false,
 					}));
-					this.setState({
-						songs,
-						value: '',
-						showError: false
-					});
+					setSongs(songList);
+					setValue('');
+					setShowError(false);
 				} else {
 					console.error('Brak wyników wyszukiwania.');
-					this.setState({
-						showError: true,
-						songs: [],
-						value: '',
-					});
+					setShowError(true);
+					setSongs([]);
+					setValue('');
 				}
 			})
 			.catch((error) => {
 				console.error('Błąd: ', error);
 			});
-	};
+	}
 
-	handleToggleFavorite = (id) => {
-		const songs = [...this.state.songs];
-		const index = songs.findIndex((song) => song.id === id);
-		songs[index].isFavorite = !songs[index].isFavorite;
-		this.setState({
-			songs,
-		});
-	};
+	function handleToggleFavorite(id) {
+		const updateSongs = [...songs];
+		const index = updateSongs.findIndex((song) => song.id === id);
+		updateSongs[index].isFavorite = !updateSongs[index].isFavorite;
+		setSongs(updateSongs);
+	}
 
-	handleChange = (e) => {
-		this.setState({
-			value: e.target.value,
-		});
-	};
+	function handleChange(e) {
+		setValue(e.target.value);
+	}
 
-	handleChangeLogin = (e) => {
+	function handleChangeLogin(e) {
 		const name = e.target.name;
-		this.setState({
-			[name]: e.target.value,
-		});
-	};
-
-	handleLoginSubmit = (e) => {
-		e.preventDefault();
-		if (this.state.email === 'test@test.pl' && this.state.password === '1234') {
-			this.setState({
-				isLogged: true,
-				loginError: null
-			});
-		} else {
-			this.setState({
-				loginError: 'Wprowadzone dane są nieprawidłowe.',
-			});
+		const value = e.target.value;
+		if (name === 'email') {
+			setEmail(value);
+		} else if (name === 'password') {
+			setPassword(value);
 		}
-	};
+	}
 
-	handleLogoutClick = () => {
-		this.setState({
-			showLogoutInfo: true,
-			showError: false
-		});
-	};
+	function handleLoginSubmit(e) {
+		e.preventDefault();
+		if (email === 'test@test.pl' && password === '1234') {
+			setIsLogged(true);
+			setLoginError(null);
+		} else {
+			setLoginError('Wprowadzone dane są nieprawidłowe.');
+		}
+	}
 
-	handleLogoutConfirm = () => {
-		this.setState({
-			isLogged: false,
-			showLogoutInfo: false,
-		});
-	};
+	function handleLogoutClick() {
+		setShowLogoutInfo(true);
+		setShowError(false);
+	}
 
-	handleLogoutCancel = () => {
-		this.setState({
-			showLogoutInfo: false,
-		});
-	};
+	function handleLogoutConfirm() {
+		setIsLogged(false);
+		setShowLogoutInfo(false);
+	}
 
-	render() {
-		const { isLogged, showLogoutInfo } = this.state;
+	function handleLogoutCancel() {
+		setShowLogoutInfo(false);
+	}
 
-		return (
-			<Router>
-				<Header
-					value={this.state.value}
-					change={this.handleChange}
-					submit={this.handleSubmit}
-					click={this.handleLogoutClick}
-					showLogoutInfo = {showLogoutInfo}
-				/>
-				
+	return (
+		<Router>
+			<Header
+				value={value}
+				change={handleChange}
+				submit={handleSubmit}
+				click={handleLogoutClick}
+				showLogoutInfo={showLogoutInfo}
+			/>
 
-				<Routes>
-					{!showLogoutInfo && (
-						<Route
-							path="/"
-							element={
-								isLogged && !showLogoutInfo ? (
-									<Songs
-										result={this.state}
-										click={this.handleToggleFavorite}
-									/>
-								) : (
-									<Navigate to="/login" />
-								)
-							}
-						/>
-					)}
-					
-					{!showLogoutInfo && (
-						<Route
-							path="/favorite"
-							element={
-								isLogged && !showLogoutInfo ? (
-									<FavoriteList
-										songs={this.state.songs}
-										click={this.handleToggleFavorite}
-									/>
-								) : (
-									<Navigate to="/login" />
-								)
-							}
-						/>
-					)}
-
-					{showLogoutInfo && (
-						<Route
-							path="/"
-							element={
-								<Logout
-									clickConfirm={this.handleLogoutConfirm}
-									clickCancel={this.handleLogoutCancel}
-								/>
-							}></Route>
-					)}
+			<Routes>
+				{!showLogoutInfo && (
 					<Route
-						path="/login"
+						path="/"
 						element={
-							!isLogged ? (
-								<Login
-									change={this.handleChangeLogin}
-									submit={this.handleLoginSubmit}
-									loginError={this.state.loginError}
-								/>
+							isLogged && !showLogoutInfo ? (
+								<Songs result={songs} click={handleToggleFavorite} />
 							) : (
-								<Navigate to="/" />
+								<Navigate to="/login" />
 							)
 						}
 					/>
-					<Route path="*" element={<ErrorPage />}></Route>
-				</Routes>
-				{this.state.showError && <ErrorSearch />}
-			</Router>
-		);
-	}
+				)}
+
+				{!showLogoutInfo && (
+					<Route
+						path="/favorite"
+						element={
+							isLogged && !showLogoutInfo ? (
+								<FavoriteList songs={songs} click={handleToggleFavorite} />
+							) : (
+								<Navigate to="/login" />
+							)
+						}
+					/>
+				)}
+
+				{showLogoutInfo && (
+					<Route
+						path="/"
+						element={
+							<Logout
+								clickConfirm={handleLogoutConfirm}
+								clickCancel={handleLogoutCancel}
+							/>
+						}></Route>
+				)}
+				<Route
+					path="/login"
+					element={
+						!isLogged ? (
+							<Login
+								change={handleChangeLogin}
+								submit={handleLoginSubmit}
+								loginError={loginError}
+							/>
+						) : (
+							<Navigate to="/" />
+						)
+					}
+				/>
+				<Route path="*" element={<ErrorPage />}></Route>
+			</Routes>
+			{showError && <ErrorSearch />}
+		</Router>
+	);
 }
 
 export default App;
