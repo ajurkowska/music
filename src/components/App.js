@@ -1,17 +1,5 @@
 import React, { useState } from 'react';
-import {
-	BrowserRouter as Router,
-	Routes,
-	Route,
-	Navigate,
-} from 'react-router-dom';
-import Header from './Header';
-import Songs from './Songs';
-import FavoriteList from './FavoriteList';
-import ErrorPage from '../pages/ErrorPage';
-import ErrorSearch from './ErrorSearch';
-import Login from './Login';
-import Logout from './Logout';
+import Router from './Router';
 
 const options = {
 	method: 'GET',
@@ -31,13 +19,11 @@ function App() {
 	const [loginError, setLoginError] = useState(null);
 	const [showLogoutInfo, setShowLogoutInfo] = useState(false);
 
+	const API_KEY = 'https://deezerdevs-deezer.p.rapidapi.com';
+
 	function handleSubmit(e) {
 		e.preventDefault();
-		console.log('kliknięto');
-		fetch(
-			`https://deezerdevs-deezer.p.rapidapi.com/search?q=${value}`,
-			options
-		)
+		fetch(API_KEY + `/search?q=${value}`, options)
 			.then((response) => {
 				if (!response.ok) {
 					throw new Error(`Http error: ${response.status}`);
@@ -118,71 +104,22 @@ function App() {
 	}
 
 	return (
-		<Router>
-			<Header
-				value={value}
-				change={handleChange}
-				submit={handleSubmit}
-				click={handleLogoutClick}
-				showLogoutInfo={showLogoutInfo}
-			/>
-
-			<Routes>
-				{!showLogoutInfo && (
-					<Route
-						path="/"
-						element={
-							isLogged && !showLogoutInfo ? (
-								<Songs result={songs} click={handleToggleFavorite} />
-							) : (
-								<Navigate to="/login" />
-							)
-						}
-					/>
-				)}
-
-				{!showLogoutInfo && (
-					<Route
-						path="/favorite"
-						element={
-							isLogged && !showLogoutInfo ? (
-								<FavoriteList songs={songs} click={handleToggleFavorite} />
-							) : (
-								<Navigate to="/login" />
-							)
-						}
-					/>
-				)}
-
-				{showLogoutInfo && (
-					<Route
-						path="/"
-						element={
-							<Logout
-								clickConfirm={handleLogoutConfirm}
-								clickCancel={handleLogoutCancel}
-							/>
-						}></Route>
-				)}
-				<Route
-					path="/login"
-					element={
-						!isLogged ? (
-							<Login
-								change={handleChangeLogin}
-								submit={handleLoginSubmit}
-								loginError={loginError}
-							/>
-						) : (
-							<Navigate to="/" />
-						)
-					}
-				/>
-				<Route path="*" element={<ErrorPage />}></Route>
-			</Routes>
-			{showError && <ErrorSearch />}
-		</Router>
+		<Router
+			showLogoutInfo={showLogoutInfo}
+			isLogged={isLogged}
+			songs={songs}
+			handleToggleFavorite={handleToggleFavorite}
+			handleLogoutConfirm={handleLogoutConfirm}
+			handleLogoutCancel={handleLogoutCancel}
+			handleChangeLogin={handleChangeLogin}
+			handleLoginSubmit={handleLoginSubmit}
+			showError={showError}
+			loginError={loginError}
+			value={value}
+			change={handleChange}
+			submit={handleSubmit}
+			click={handleLogoutClick}
+		/>
 	);
 }
-
 export default App;
